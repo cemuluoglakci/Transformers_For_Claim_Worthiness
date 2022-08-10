@@ -309,7 +309,11 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
 
         return metric_df
 
-
+class Predictor(WorthinessChecker):
+    def __init__(self, best_run, constants):
+        self.constants = constants
+        self.config = best_run
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_name, use_fast=False)
 
 class Dict2Class(object):
     def __init__(self, dict):

@@ -11,7 +11,7 @@ import wandb
 
 #Custom modules
 from utils.constants import Constants
-from utils.worthiness_checker import WorthinessChecker
+from utils.worthiness_checker import WorthinessChecker, Predictor
 
 st.set_page_config(
     page_icon=':shark:',
@@ -46,11 +46,8 @@ def check_worthiness(tweet):
 
 @st.experimental_singleton
 def get_bert_model():
-    best_sweep = '2afv0m0i'
-    sweep = api.sweep("cemulu/Transformers_For_ClaimWorthiness/" + best_sweep)
-    best_run = sweep.best_run()
-    best_run.summary.get("avg_val_mAP")
-    checker = WorthinessChecker(best_run, constants)
+    best_run = st.secrets["bertweet_best_model"]
+    checker = Predictor(best_run, constants)
 
     model_file_name = 'vinai_bertweet-covid19-base-uncased_0.7651173954688729.pt'
     PATH = os.path.join(parent_dir, 'Model', model_file_name)
