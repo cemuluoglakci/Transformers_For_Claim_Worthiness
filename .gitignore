@@ -4,3 +4,4 @@ cemulu/
 Data/
 **/env_config.py
 **/secrets.toml
+env/
