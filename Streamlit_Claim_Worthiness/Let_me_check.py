@@ -10,6 +10,7 @@ import time
 import torch
 import wandb
 
+from utils import Constants, WorthinessChecker
 import utils
 # import utils.worthiness_checker as worthiness_checker
 # import utils.constants as constants
@@ -42,7 +43,7 @@ fold_count = 3 #5
 patience=5
 
 
-constants = utils.Constants()
+constants = Constants()
 constants.device = device
 constants.parent_dir = parent_dir
 constants.seed_list = seed_list
@@ -64,7 +65,7 @@ def get_bert_model():
     sweep = api.sweep("cemulu/Transformers_For_ClaimWorthiness/" + best_sweep)
     best_run = sweep.best_run()
     best_run.summary.get("avg_val_mAP")
-    checker = utils.WorthinessChecker(best_run, constants)
+    checker = WorthinessChecker(best_run, constants)
 
     model_file_name = 'vinai_bertweet-covid19-base-uncased_0.7651173954688729.pt'
     PATH = os.path.join(parent_dir, 'Model', model_file_name)
