@@ -6,8 +6,9 @@ import openai
 import os
 import wandb
 
+from .utils import constants
 import utils
-from utils import constants
+
 
 #Custom modules
 from utils.constants import Constants
