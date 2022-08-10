@@ -11,7 +11,7 @@ import wandb
 
 #Custom modules
 from utils.constants import Constants
-from utils.worthiness_checker import WorthinessChecker, Predictor
+from utils.worthiness_checker import Predictor
 
 st.set_page_config(
     page_icon=':shark:',

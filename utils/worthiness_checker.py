@@ -315,6 +315,7 @@ class Predictor(WorthinessChecker):
         self.config = best_run
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_name, use_fast=False)
 
+
 class Dict2Class(object):
     def __init__(self, dict):
         for key in dict:
