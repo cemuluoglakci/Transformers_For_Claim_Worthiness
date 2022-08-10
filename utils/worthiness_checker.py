@@ -73,6 +73,16 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
             print('This expression DOES NOT contain a check-worthy claim with a {:.2%} conficency '.format(1-probability))
         return probability
 
+    def prediction_expression(self, sentence: str):
+        probability = self.predict(sentence)
+        isCheckWorthy = (probability> .5)
+        reply = ""
+        if isCheckWorthy:
+            reply = 'This expression contains a check-worthy claim with a {:.2%} confidency '.format(probability)
+        else:
+            reply = 'This expression DOES NOT contain a check-worthy claim with a {:.2%} confidency '.format(1-probability)
+        return reply
+
     def batch_predict(self, test_df: pd.DataFrame):
         if not hasattr(self, 'model'):
             print('Training the model...')
