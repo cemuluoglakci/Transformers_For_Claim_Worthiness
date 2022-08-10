@@ -10,6 +10,7 @@ import time
 import torch
 import wandb
 
+import utils
 import utils.worthiness_checker as worthiness_checker
 import utils.constants as constants
 
