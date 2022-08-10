@@ -6,6 +6,9 @@ import openai
 import os
 import wandb
 
+import utils
+from utils import constants
+
 #Custom modules
 from utils.constants import Constants
 from utils.worthiness_checker import WorthinessChecker
