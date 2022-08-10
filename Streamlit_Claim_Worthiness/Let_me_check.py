@@ -1,14 +1,13 @@
 import sys
+import os
 if ".." not in sys.path:
     sys.path.append('../')
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 import streamlit as st
 import openai
-import os
 import wandb
-
-from .utils import constants
-import utils
-
 
 #Custom modules
 from utils.constants import Constants
