@@ -14,7 +14,7 @@ from utils.worthiness_checker import Predictor
 openai.api_key = st.secrets["api_key"]
 
 st.set_page_config(
-    page_icon=':shark:',
+    page_icon='🐼',
     page_title='Check-Worthiness',
     initial_sidebar_state='auto',
     layout="wide",
@@ -45,7 +45,7 @@ def get_bert_model(model_name):
 
 st.title('Let me check your Check-Worthiness')
 
-input = st.text_input("Is this statement Chech-Worthy?",placeholder='Is this statement Chech-Worthy?')
+input = st.text_input("",placeholder='Is this statement Chech-Worthy?')
 button = st.button('Submit')
 
 c30, c31, c32, c33, c34 = st.columns([1,1,2,1,1])
@@ -64,8 +64,5 @@ if button:
         bertweet_checker = get_bert_model("roberta")
         prediction_string = bertweet_checker.prediction_expression(input)
         st.markdown('****RoBERTa says:**** ' + prediction_string)
-    with st.spinner(text='In progress'):
-        bertweet_checker = get_bert_model("bert")
-        prediction_string = bertweet_checker.prediction_expression(input)
-        st.markdown('****BERT says:**** ' + prediction_string)
+
 
