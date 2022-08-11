@@ -50,7 +50,7 @@ def get_bert_model():
     checker = Predictor(best_run, constants)
 
     model_file_name = 'vinai_bertweet-covid19-base-uncased_0.7651173954688729.pt'
-    PATH = os.path.join(parent_dir, 'Model', model_file_name)
+    PATH = os.path.join(os.path.abspath(os.getcwd()), 'Model', model_file_name)
     checker.load_model(PATH)
     return checker
 
