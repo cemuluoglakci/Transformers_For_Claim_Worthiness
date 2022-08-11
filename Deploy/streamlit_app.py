@@ -11,7 +11,7 @@ import wandb
 
 #Custom modules
 from utils.constants import Constants
-from utils.worthiness_checker import WorthinessChecker
+from utils.worthiness_checker import Predictor
 
 st.set_page_config(
     page_icon=':shark:',
@@ -47,7 +47,7 @@ def check_worthiness(tweet):
 @st.experimental_singleton
 def get_bert_model():
     best_run = st.secrets["bertweet_best_model"]
-    checker = WorthinessChecker(best_run, constants)
+    checker = Predictor(best_run, constants)
 
     model_file_name = 'vinai_bertweet-covid19-base-uncased_0.7651173954688729.pt'
     PATH = os.path.join(parent_dir, 'Model', model_file_name)
