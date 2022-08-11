@@ -1,16 +1,17 @@
 import sys
 import os
-if ".." not in sys.path:
-    sys.path.append('../')
-
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+import pandas as pd
+import numpy as np
 import streamlit as st
 import openai
 
 #Custom modules
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 from utils.constants import Constants
 from utils.worthiness_checker import Predictor
+
+openai.api_key = st.secrets["api_key"]
 
 st.set_page_config(
     page_icon=':shark:',
@@ -25,28 +26,24 @@ header {visibility: hidden;}
 footer {visibility: hidden;}
 </style> """, unsafe_allow_html=True)
 
-st.title('Let me check your Check-Worthiness')
-
-openai.api_key = st.secrets["api_key"]
-fine_tuned_model = st.secrets["fine_tuned_model"]
-parent_dir = os.path.dirname(os.path.abspath(os.getcwd()))
-
-constants = Constants()
-constants.parent_dir = parent_dir
-
 def check_worthiness(tweet):
-    print('arrived gpt')
     tweet = tweet + "\n\n###\n\n"
-    result = openai.Completion.create(model = fine_tuned_model, prompt=str(tweet), max_tokens=10, temperature=0)['choices'][0]['text'] 
-    print('- ', tweet, ': ', result)
-    return result
+    result = openai.Completion.create(model = st.secrets["fine_tuned_model"],
+     prompt=str(tweet), max_tokens=10, temperature=0,logprobs=5)['choices'][0]
+    answer = result['text']
+    probability = pd.DataFrame([result["logprobs"]["top_logprobs"][0]]).T.apply(lambda x: 100*np.e**x).max().item() 
+    return '{} and it is {:.4f}% sure '.format(answer, probability)
 
 @st.experimental_singleton
-def get_bert_model():
-    best_run = st.secrets["bertweet_best_model"]
+def get_bert_model(model_name):
+    constants = Constants()
+    constants.parent_dir = os.path.dirname(os.path.abspath(os.getcwd()))
+    best_run = st.secrets[model_name+"_best_model"]
     checker = Predictor(best_run, constants)
-    checker.load_model_online(st.secrets["bertweet_url"])
+    checker.load_model_online(st.secrets[model_name+"_url"])
     return checker
+
+st.title('Let me check your Check-Worthiness')
 
 input = st.text_input("Is this statement Chech-Worthy?",placeholder='Is this statement Chech-Worthy?')
 button = st.button('Submit')
@@ -60,6 +57,15 @@ if button:
         report_text = check_worthiness(input)
         st.markdown('**GPT3 says:** '+report_text)
     with st.spinner(text='In progress'):
-        bertweet_checker = get_bert_model()
-        probability = bertweet_checker.prediction_expression(input)
-        st.markdown('**BERTweet says:** ' + str(probability))
+        bertweet_checker = get_bert_model("bertweet")
+        prediction_string = bertweet_checker.prediction_expression(input)
+        st.markdown('****BERTweet says:**** ' + prediction_string)
+    with st.spinner(text='In progress'):
+        bertweet_checker = get_bert_model("roberta")
+        prediction_string = bertweet_checker.prediction_expression(input)
+        st.markdown('****RoBERTa says:**** ' + prediction_string)
+    with st.spinner(text='In progress'):
+        bertweet_checker = get_bert_model("bert")
+        prediction_string = bertweet_checker.prediction_expression(input)
+        st.markdown('****BERT says:**** ' + prediction_string)
+

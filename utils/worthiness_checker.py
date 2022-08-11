@@ -120,8 +120,8 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
         train_dataloader, test_dataloader = self.ret_dataloader(train_dataset, test_dataset)
         model = custom_models.TransformerClassifier(self.config).to(self.constants.device)
 
-        optimizer = self.ret_optim(model, self.config)
-        scheduler = self.ret_scheduler(train_dataloader, optimizer, self.config)
+        optimizer = self.ret_optim(model)
+        scheduler = self.ret_scheduler(train_dataloader, optimizer)
 
         epoch_train_metrics_list = []
         epoch_test_metrics_list = []
@@ -130,8 +130,8 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
             print('======== Epoch {:} / {:} ========'.format(epoch_i + 1, epochs))
             self.train_one_epoch(model, self.constants.device, train_dataloader, self.constants.loss_function, optimizer, scheduler)
 
-            epoch_train_metrics = self.evaluate_one_epoch(model, self.constants.device, train_dataloader)
-            epoch_test_metrics = self.evaluate_one_epoch(model, self.constants.device, test_dataloader)
+            epoch_train_metrics = self.evaluate_one_epoch(model, train_dataloader)
+            epoch_test_metrics = self.evaluate_one_epoch(model, test_dataloader)
             epoch_train_metrics_list.append(epoch_train_metrics)
             epoch_test_metrics_list.append(epoch_test_metrics)
 
@@ -179,7 +179,11 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
         max_token_length = self.config.max_token_length
 
         sentences = df.tweet_text.values
-        labels = df.check_worthiness.values
+        labels = None
+        try:
+            labels = df.check_worthiness.values
+        except:
+            labels = df.claim_worthiness.values
 
         # Tokenize all of the sentences and map the tokens to thier word IDs.
         input_ids = []
@@ -220,16 +224,16 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
                 )
         return train_dataloader, validation_dataloader
 
-    def ret_optim(self,model, config):
+    def ret_optim(self, model):
         #print('Learning_rate = ',wandb.config.learning_rate )
         optimizer = torch.optim.AdamW(model.parameters(),
-                          lr = config.learning_rate, 
+                          lr = self.config.learning_rate, 
                           eps = 1e-8 
                         )
         return optimizer
 
-    def ret_scheduler(self,train_dataloader,optimizer, config):
-        epochs = config.epochs
+    def ret_scheduler(self,train_dataloader,optimizer):
+        epochs = self.config.epochs
         total_steps = len(train_dataloader) * epochs
 
         # Create the learning rate scheduler.
@@ -238,7 +242,7 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
                                                     num_training_steps = total_steps)
         return scheduler
 
-    def evaluate_one_epoch(self, model, device, dataloader):
+    def evaluate_one_epoch(self, model, dataloader):
 
         model.eval()
 
@@ -250,7 +254,7 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
         # Evaluate data for one epoch
         for batch in dataloader:
             
-            probability, loss = self.evaluate_one_batch(self, batch)
+            probability, loss = self.evaluate_one_batch(model, batch)
 
             # Accumulate the validation loss, probability and labels.
             total_eval_loss += loss.item()
@@ -263,12 +267,12 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
 
         return metrics_df
 
-    def evaluate_one_batch(self, batch):
-        b_input_ids = batch[0].to(self.config.device)
-        b_labels = batch[1].to(self.config.device)
+    def evaluate_one_batch(self, model, batch):
+        b_input_ids = batch[0].to(self.constants.device)
+        b_labels = batch[1].to(self.constants.device)
 
         with torch.no_grad():        
-            probability = self.model(b_input_ids).flatten()
+            probability = model(b_input_ids).flatten()
             loss = self.constants.loss_function(probability, b_labels)
 
         probability = probability.detach().cpu()

@@ -5,3 +5,6 @@ Data/
 **/env_config.py
 **/secrets.toml
 env/
+__pycache__/
+Model/roberta-base_0.7551132534277406.pt
+Model/bert-base-uncased_0.7332254639950794.pt
