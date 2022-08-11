@@ -1,9 +1,11 @@
 from utils import custom_models, wandb_wrapper
 
 import os
+from io import BytesIO
 import numpy as np
 import pandas as pd
 import torch
+import requests
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from sklearn import metrics
@@ -150,11 +152,20 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
 
         return model
 
-    def load_model(self, PATH):
+    def load_model(self, PATH: str):
         device = self.constants.device
         
         model = custom_models.TransformerClassifier(self.config).to(device)
         model.load_state_dict(torch.load(PATH, map_location=device))
+
+        self.model = model
+
+    def load_model_online(self, LINK: str):
+        device = self.constants.device
+        
+        model = custom_models.TransformerClassifier(self.config).to(device)
+        drive_response = requests.get(LINK)
+        model.load_state_dict(torch.load(BytesIO(drive_response.content), map_location=device))
 
         self.model = model
 

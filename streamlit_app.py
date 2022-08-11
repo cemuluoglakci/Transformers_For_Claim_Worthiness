@@ -45,10 +45,7 @@ def check_worthiness(tweet):
 def get_bert_model():
     best_run = st.secrets["bertweet_best_model"]
     checker = Predictor(best_run, constants)
-
-    model_file_name = 'vinai_bertweet-covid19-base-uncased_0.7651173954688729.pt'
-    PATH = os.path.join(os.path.abspath(os.getcwd()), 'Model', model_file_name)
-    checker.load_model(PATH)
+    checker.load_model_online(st.secrets["bertweet_url"])
     return checker
 
 input = st.text_input("Is this statement Chech-Worthy?",placeholder='Is this statement Chech-Worthy?')
