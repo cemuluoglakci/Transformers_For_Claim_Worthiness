@@ -1,5 +1,6 @@
 import sys
 import os
+import webbrowser
 import pandas as pd
 import numpy as np
 import streamlit as st
@@ -48,21 +49,23 @@ st.title('Let me check your Check-Worthiness')
 input = st.text_input("",placeholder='Is this statement Chech-Worthy?')
 button = st.button('Submit')
 
-c30, c31, c32, c33, c34 = st.columns([1,1,2,1,1])
-with c32:
-    st.image("./Streamlit_Claim_Worthiness/media/pandaai.png", use_column_width=True)
-
 if button:
+    webbrowser.open("""#bottom""")
     with st.spinner(text='In progress'):
         report_text = check_worthiness(input)
         st.markdown('**GPT3 says:** '+report_text)
     with st.spinner(text='In progress'):
         bertweet_checker = get_bert_model("bertweet")
         prediction_string = bertweet_checker.prediction_expression(input)
-        st.markdown('****BERTweet says:**** ' + prediction_string)
+        st.markdown('**BERTweet says:** ' + prediction_string)
     with st.spinner(text='In progress'):
         bertweet_checker = get_bert_model("roberta")
         prediction_string = bertweet_checker.prediction_expression(input)
         st.markdown('****RoBERTa says:**** ' + prediction_string)
+
+c30, c31, c32, c33, c34 = st.columns([1,1,2,1,1])
+with c32:
+    st.image("./Streamlit_Claim_Worthiness/media/pandaai.png", use_column_width=True)
+
 
 
