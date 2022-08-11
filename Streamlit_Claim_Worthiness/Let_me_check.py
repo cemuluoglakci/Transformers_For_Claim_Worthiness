@@ -10,8 +10,8 @@ import openai
 import wandb
 
 #Custom modules
-from utils.constants import Constants
-from utils.worthiness_checker import WorthinessChecker
+#from utils.constants import Constants
+#from utils.worthiness_checker import WorthinessChecker
 
 st.set_page_config(
     page_icon=':shark:',
@@ -32,10 +32,10 @@ openai.api_key = st.secrets["api_key"]
 fine_tuned_model = st.secrets["fine_tuned_model"]
 parent_dir = os.path.dirname(os.path.abspath(os.getcwd()))
 
-constants = Constants()
-constants.parent_dir = parent_dir
-
-api = wandb.Api()
+#constants = Constants()
+#constants.parent_dir = parent_dir
+#
+#api = wandb.Api()
 
 def check_worthiness(tweet):
     print('arrived gpt')
@@ -46,6 +46,7 @@ def check_worthiness(tweet):
 
 @st.experimental_singleton
 def get_bert_model():
+    return '3'
     best_sweep = '2afv0m0i'
     sweep = api.sweep("cemulu/Transformers_For_ClaimWorthiness/" + best_sweep)
     best_run = sweep.best_run()
@@ -69,6 +70,7 @@ if button:
         report_text = check_worthiness(input)
         st.markdown('**GPT3 says:** '+report_text)
     with st.spinner(text='In progress'):
-        bertweet_checker = get_bert_model()
-        probability = bertweet_checker.prediction_expression(input)
-        st.markdown('**BERTweet says:** ' + str(probability))
+        # bertweet_checker = get_bert_model()
+        # probability = bertweet_checker.prediction_expression(input)
+        # st.markdown('**BERTweet says:** ' + str(probability))
+        st.markdown('**BERTweet says:** ' + str(get_bert_model()))
