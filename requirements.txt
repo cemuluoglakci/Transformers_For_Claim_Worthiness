@@ -3,6 +3,5 @@ streamlit
 openai
 torch
 transformers
-wandb
 sklearn
 wget

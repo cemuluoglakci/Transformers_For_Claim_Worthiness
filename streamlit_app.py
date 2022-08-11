@@ -7,7 +7,6 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 import streamlit as st
 import openai
-import wandb
 
 #Custom modules
 from utils.constants import Constants
@@ -34,8 +33,6 @@ parent_dir = os.path.dirname(os.path.abspath(os.getcwd()))
 
 constants = Constants()
 constants.parent_dir = parent_dir
-
-api = wandb.Api()
 
 def check_worthiness(tweet):
     print('arrived gpt')
