@@ -65,7 +65,7 @@ if button:
 
 c30, c31, c32, c33, c34 = st.columns([1,1,2,1,1])
 with c32:
-    st.image("./Streamlit_Claim_Worthiness/media/pandaai.png", use_column_width=True)
+    st.image("./Media/pandaai.png", use_column_width=True)
 
 
 
