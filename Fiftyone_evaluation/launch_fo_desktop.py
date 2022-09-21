@@ -1,6 +1,6 @@
 import fiftyone as fo
 
-fo.config.desktop_app = True
+fo.config.desktop_app = False
 
 dataset_name = "tweet_dataset"
 dataset = fo.load_dataset(dataset_name)

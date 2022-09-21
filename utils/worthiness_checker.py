@@ -75,6 +75,25 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
             print('This expression DOES NOT contain a check-worthy claim with a {:.2%} conficency '.format(1-probability))
         return probability
 
+    def get_embedding(self, sentence: str):
+        if not hasattr(self, 'model'):
+            print('Training the model...')
+            self.train_full_model()
+        #preprocess text
+        input_ids = self.tokenizer.encode_plus(
+                            sentence,                      # Sentence to encode.
+                            add_special_tokens = True, # Add '[CLS]' and '[SEP]' or equivalent
+                            #max_length = self.config.max_token_length,           # 64? 4-128? Pad & truncate all sentences.
+                            truncation=True,
+                            padding = 'max_length',
+                            return_attention_mask = False,   # Do not Construct attn. masks.
+                            return_tensors = 'pt',     # Return pytorch tensors.
+                       ).input_ids
+
+        self.model.eval()
+        last_hidden_states = self.model.transformer(input_ids.to(self.constants.device)).last_hidden_state
+        return last_hidden_states[0][0]
+
     def prediction_expression(self, sentence: str):
         probability = self.predict(sentence)
         isCheckWorthy = (probability> .5)
