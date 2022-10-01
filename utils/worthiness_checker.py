@@ -188,6 +188,11 @@ class WorthinessChecker(wandb_wrapper.WandbWrapper):
 
         self.model = model
 
+    def load_raw_model(self):
+        device = self.constants.device       
+        model = custom_models.TransformerClassifier(self.config).to(device)
+        self.model = model
+
     def get_data_from_file(self):
         data_version = self.config.data_version
         train_df = pd.read_csv(os.path.join(self.constants.parent_dir, 'Data','train_english_{}.tsv'.format(data_version)), delimiter='\t')
